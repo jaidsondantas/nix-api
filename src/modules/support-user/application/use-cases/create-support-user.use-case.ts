@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, Inject } from '@nestjs/common';
-import { CreateSupportUserDto } from '../../presentation/dto/create-support-user.dto';
+import { CreateSupportUserDto } from '../dto/create-support-user.dto';
 import * as bcrypt from 'bcrypt';
 import { SupportUserRepository } from '../../infra/database/mongoose/repositories/support-user-repository';
 

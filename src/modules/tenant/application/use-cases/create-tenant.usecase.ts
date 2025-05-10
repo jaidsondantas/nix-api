@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { CreateTenantDto } from '../../presentation/dto/create-tenant.dto';
+import { CreateTenantDto } from '../dto/create-tenant.dto';
 import { Tenant } from '../../domain/entities/tenant.entity';
 import { TenantRepository } from '../../infra/database/mongoose/repositories/tenant.repository';
 
