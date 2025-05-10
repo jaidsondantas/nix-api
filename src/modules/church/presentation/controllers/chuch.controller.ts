@@ -21,10 +21,12 @@ import { ListChurchesUseCase } from '../../application/use-cases/list-churches.u
 import { CreateChurchDto } from '../../application/dto/create-church.dto';
 import { UpdateChurchDto } from '../../application/dto/update-church.dto';
 import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
+import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
 import { assertTenantAccess } from '../../../../shared/utils/assert-tenant-access';
 import { ChurchStatus } from '../../../../shared/enums/church-status.enum';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('churches')
 export class ChurchController {
   constructor(
@@ -36,15 +38,17 @@ export class ChurchController {
   ) {}
 
   @Post()
+  @Roles('super_admin', 'support', 'admin')
   async create(@Body() dto: CreateChurchDto, @Req() req) {
     return this.createChurch.execute(dto);
   }
 
   @Get()
+  @Roles('super_admin', 'support', 'admin', 'leader')
   async findAll(@Query('tenantId') tenantId: string, @Req() req) {
     const user = req.user;
     const filter: any = {};
-    if (user.role === 'super_admin' || user.role === 'support') {
+    if (['super_admin', 'support'].includes(user.role)) {
       if (tenantId) filter.tenantId = tenantId;
     } else if (user.tenantId) {
       filter.tenantId = user.tenantId;
@@ -55,6 +59,7 @@ export class ChurchController {
   }
 
   @Get(':id')
+  @Roles('super_admin', 'support', 'admin', 'leader')
   async findOne(@Param('id') id: string, @Req() req) {
     const church = await this.listChurches['churchRepo'].findById(id);
     if (!church) throw new NotFoundException('Church not found');
@@ -63,6 +68,7 @@ export class ChurchController {
   }
 
   @Put(':id')
+  @Roles('super_admin', 'support', 'admin', 'leader')
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateChurchDto,
@@ -75,6 +81,7 @@ export class ChurchController {
   }
 
   @Delete(':id')
+  @Roles('super_admin', 'support', 'admin', 'leader')
   async remove(@Param('id') id: string, @Req() req) {
     const church = await this.listChurches['churchRepo'].findById(id);
     if (!church) throw new NotFoundException('Church not found');
@@ -84,6 +91,7 @@ export class ChurchController {
   }
 
   @Patch(':id/status')
+  @Roles('super_admin', 'support', 'admin', 'leader')
   async changeStatusEndpoint(
     @Param('id') id: string,
     @Body('status') status: ChurchStatus,
