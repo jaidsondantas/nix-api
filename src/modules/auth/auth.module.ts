@@ -18,6 +18,8 @@ import { CacheService } from '../../shared/services/cache.service';
 import { RecoverPasswordUseCase } from './application/use-cases/recover-password.use-case';
 import { MessagingModule } from '../messaging/messaging.module';
 import { VerifyRecoveryCodeUseCase } from './application/use-cases/verify-recovery-code.use-case';
+import { UserRepository } from '../user/infra/database/mongoose/repositories/user.repository';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -26,9 +28,9 @@ import { VerifyRecoveryCodeUseCase } from './application/use-cases/verify-recove
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1h' },
     }),
-    // UserModule,
     SupportUserModule,
     MessagingModule,
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [

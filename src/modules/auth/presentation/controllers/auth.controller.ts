@@ -24,7 +24,7 @@ export class AuthController {
   @Post('user/login')
   @UseGuards(AuthGuard('local'))
   async userLogin(@Request() req) {
-    return this.loginUseCase.execute({ ...req.user, role: 'user' });
+    return this.loginUseCase.execute({ ...req.user });
   }
 
   @Post('support-user/login')
