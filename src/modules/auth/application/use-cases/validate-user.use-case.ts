@@ -1,13 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { SupportUserRepository } from '../../../support-user/infra/database/mongoose/repositories/support-user-repository';
+import { UserRepository } from '../../../user/infra/database/mongoose/repositories/user.repository';
 
 @Injectable()
 export class ValidateUserUseCase {
-  private readonly userRepo: any;
+  // private readonly userRepo: any;
 
   constructor(
-    // private readonly userRepo: any,
+    private readonly userRepo: UserRepository,
     private readonly supportUserRepo: SupportUserRepository,
   ) {}
 
@@ -21,6 +22,6 @@ export class ValidateUserUseCase {
       throw new UnauthorizedException('User is inactive');
     }
     const { passwordHash, ...result } = user;
-    return { ...result, role: type === 'user' ? 'user' : user.role };
+    return { ...result, role: user.role ? user.role : 'user' };
   }
 }

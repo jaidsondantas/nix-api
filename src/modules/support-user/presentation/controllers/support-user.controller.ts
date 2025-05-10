@@ -9,9 +9,9 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { CreateSupportUserDto } from '../dto/create-support-user.dto';
-import { UpdateSupportUserDto } from '../dto/update-support-user.dto';
-import { ChangePasswordDto } from '../dto/change-password.dto';
+import { CreateSupportUserDto } from '../../application/dto/create-support-user.dto';
+import { UpdateSupportUserDto } from '../../application/dto/update-support-user.dto';
+import { ChangePasswordDto } from '../../application/dto/change-password.dto';
 import { CreateSupportUserUseCase } from '../../application/use-cases/create-support-user.use-case';
 import { ListSupportUsersUseCase } from '../../application/use-cases/list-support-users.use-case';
 import { GetSupportUserUseCase } from '../../application/use-cases/get-support-user.use-case';

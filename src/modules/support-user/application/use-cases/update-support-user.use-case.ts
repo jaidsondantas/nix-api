@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { SupportUserRepository } from '../../infra/database/mongoose/repositories/support-user-repository';
-import { UpdateSupportUserDto } from '../../presentation/dto/update-support-user.dto';
+import { UpdateSupportUserDto } from '../dto/update-support-user.dto';
 import { SupportUserDocument } from '../../infra/database/mongoose/schemas/support-user.schema';
 
 @Injectable()

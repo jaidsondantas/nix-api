@@ -9,6 +9,8 @@ import { MessagingModule } from './modules/messaging/messaging.module';
 import { CacheModule } from '@nestjs/common/cache';
 import * as redisStore from 'cache-manager-redis-store';
 import { TenantModule } from './modules/tenant/tenant.module';
+import { ChurchModule } from './modules/church/church.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { TenantModule } from './modules/tenant/tenant.module';
     SupportUserModule,
     MessagingModule,
     TenantModule,
+    ChurchModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

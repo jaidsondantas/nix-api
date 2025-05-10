@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UpdateTenantDto } from '../../presentation/dto/update-tenant.dto';
+import { UpdateTenantDto } from '../dto/update-tenant.dto';
 import { Tenant } from '../../domain/entities/tenant.entity';
 import { TenantRepository } from '../../infra/database/mongoose/repositories/tenant.repository';
 import { TenantDocument } from '../../infra/database/mongoose/schemas/tenant.schema';

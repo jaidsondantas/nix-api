@@ -12,8 +12,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CreateTenantDto } from '../dto/create-tenant.dto';
-import { UpdateTenantDto } from '../dto/update-tenant.dto';
+import { CreateTenantDto } from '../../application/dto/create-tenant.dto';
+import { UpdateTenantDto } from '../../application/dto/update-tenant.dto';
 import { CreateTenantUseCase } from '../../application/use-cases/create-tenant.usecase';
 import { ListTenantsUseCase } from '../../application/use-cases/list-tenants.usecase';
 import { GetTenantUseCase } from '../../application/use-cases/get-tenant.usecase';
@@ -24,8 +24,6 @@ import { JwtAuthGuard } from '../../../auth/presentation/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('super_admin')
 @Controller('tenants')
 export class TenantController {
   constructor(
@@ -42,27 +40,37 @@ export class TenantController {
     return this.createTenantUseCase.execute(dto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
   @Get()
   async findAll() {
     return await this.listTenantsUseCase.execute();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.getTenantUseCase.execute(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
   @Put(':id')
   async update(@Param('id') id: string, @Body() dto: UpdateTenantDto) {
     return this.updateTenantUseCase.execute(id, dto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string) {
     await this.removeTenantUseCase.execute(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('super_admin')
   @Patch(':id/status')
   async setStatus(
     @Param('id') id: string,
