@@ -47,4 +47,16 @@ export class ChurchRepository {
     const found = await this.churchModel.findOne({ name, tenantId });
     return found ? found.toObject() : null;
   }
+
+  async findAllPaginated(
+    filter: any,
+    skip: number,
+    limit: number,
+  ): Promise<Church[]> {
+    return this.churchModel.find(filter).skip(skip).limit(limit).lean();
+  }
+
+  async count(filter: any): Promise<number> {
+    return this.churchModel.countDocuments(filter);
+  }
 }

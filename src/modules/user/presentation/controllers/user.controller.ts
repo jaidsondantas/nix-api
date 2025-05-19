@@ -25,6 +25,7 @@ import { CreateUserDto } from '../../application/dto/create-user.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
 import { PatchUserStatusDto } from '../../application/dto/patch-user-status.dto';
 import { PatchUserMemberDto } from '../../application/dto/patch-user-member.dto';
+import { UserFilterDto } from "../../application/dto/user-filter.dto";
 
 @Controller('users')
 export class UserController {
@@ -44,22 +45,36 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('super_admin', 'support', 'admin')
+  @Roles('super_admin', 'support', 'admin', 'leader')
   @Get()
-  async list(@Query() query: any, @Req() req) {
+  async list(@Query() query: UserFilterDto, @Req() req) {
     const user = req.user;
-    if (!['super_admin', 'support'].includes(user.role)) {
+    const isSuperOrSupport = ['super_admin', 'support'].includes(user.role);
+
+    // Para não-super_admin/support, ignore tenantId do query e use do contexto
+    if (!isSuperOrSupport) {
       query.tenantId = user.tenantId;
-      if (user.churchId) query.churchId = user.churchId;
     }
-    return this.listUsersUC.execute(query);
+
+    // Para admins comuns, nunca permita acesso a outros tenants
+    if (!isSuperOrSupport && query.tenantId !== user.tenantId) {
+      query.tenantId = user.tenantId;
+    }
+
+    // Paginação segura
+    query.page = query.page || 1;
+    query.limit = Math.min(query.limit || 20, 100);
+
+    return this.listUsersUC.execute(query, isSuperOrSupport);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('super_admin', 'support', 'admin')
+  @Roles('super_admin', 'support', 'admin', 'leader')
   @Get(':id')
-  async get(@Param('id') id: string) {
-    return this.getUserUC.execute(id);
+  async get(@Param('id') id: string, @Req() req) {
+    const user = req.user;
+    const isSuperOrSupport = ['super_admin', 'support'].includes(user.role);
+    return this.getUserUC.execute(id, user, isSuperOrSupport);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

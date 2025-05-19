@@ -47,4 +47,16 @@ export class UserRepository {
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).lean();
   }
+
+  async findWithPagination(
+    filter: any,
+    skip: number,
+    limit: number,
+  ): Promise<User[]> {
+    return this.userModel.find(filter).skip(skip).limit(limit).lean();
+  }
+
+  async count(filter: any): Promise<number> {
+    return this.userModel.countDocuments(filter);
+  }
 }

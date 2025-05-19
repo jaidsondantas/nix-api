@@ -25,6 +25,7 @@ import { RolesGuard } from '../../../auth/presentation/guards/roles.guard';
 import { Roles } from '../../../auth/presentation/decorators/roles.decorator';
 import { assertTenantAccess } from '../../../../shared/utils/assert-tenant-access';
 import { ChurchStatus } from '../../../../shared/enums/church-status.enum';
+import { ChurchFilterDto } from '../../application/dto/church-filter.dto';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('churches')
@@ -43,27 +44,61 @@ export class ChurchController {
     return this.createChurch.execute(dto);
   }
 
+  // @Get()
+  // @Roles('super_admin', 'support', 'admin', 'leader')
+  // async findAll(@Query('tenantId') tenantId: string, @Req() req) {
+  //   const user = req.user;
+  //   const filter: any = {};
+  //   if (['super_admin', 'support'].includes(user.role)) {
+  //     if (tenantId) filter.tenantId = tenantId;
+  //   } else if (user.tenantId) {
+  //     filter.tenantId = user.tenantId;
+  //   } else {
+  //     throw new ForbiddenException();
+  //   }
+  //   return this.listChurches.execute(filter);
+  // }
+
   @Get()
   @Roles('super_admin', 'support', 'admin', 'leader')
-  async findAll(@Query('tenantId') tenantId: string, @Req() req) {
+  async findAll(@Query() query: ChurchFilterDto, @Req() req) {
     const user = req.user;
-    const filter: any = {};
-    if (['super_admin', 'support'].includes(user.role)) {
-      if (tenantId) filter.tenantId = tenantId;
-    } else if (user.tenantId) {
-      filter.tenantId = user.tenantId;
-    } else {
-      throw new ForbiddenException();
+    const isSupport = ['super_admin', 'support'].includes(user.role);
+
+    // Força tenantId do usuário autenticado se não for suporte
+    if (!isSupport) {
+      query.tenantId = user.tenantId;
     }
-    return this.listChurches.execute(filter);
+
+    // Remove tenantId do filtro caso não seja suporte
+    if (!isSupport && query.tenantId && query.tenantId !== user.tenantId) {
+      query.tenantId = user.tenantId;
+    }
+
+    return this.listChurches.execute(query, isSupport);
   }
+
+  // @Get(':id')
+  // @Roles('super_admin', 'support', 'admin', 'leader')
+  // async findOne(@Param('id') id: string, @Req() req) {
+  //   const church = await this.listChurches['churchRepo'].findById(id);
+  //   if (!church) throw new NotFoundException('Church not found');
+  //   assertTenantAccess(req.user, church.tenantId);
+  //   return church;
+  // }
 
   @Get(':id')
   @Roles('super_admin', 'support', 'admin', 'leader')
   async findOne(@Param('id') id: string, @Req() req) {
-    const church = await this.listChurches['churchRepo'].findById(id);
+    const user = req.user;
+    const isSupport = ['super_admin', 'support'].includes(user.role);
+
+    const church = await this.listChurches.findByIdWithTenantCheck(
+      id,
+      user,
+      isSupport,
+    );
     if (!church) throw new NotFoundException('Church not found');
-    assertTenantAccess(req.user, church.tenantId);
     return church;
   }
 

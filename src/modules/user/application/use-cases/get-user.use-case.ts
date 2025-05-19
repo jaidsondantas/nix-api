@@ -5,10 +5,14 @@ import { UserRepository } from '../../infra/database/mongoose/repositories/user.
 export class GetUserUseCase {
   constructor(private readonly userRepo: UserRepository) {}
 
-  async execute(id: string) {
+  async execute(id: string, authUser: any, isSuperOrSupport: boolean) {
     const user = await this.userRepo.findById(id);
     if (!user) throw new NotFoundException('User not found');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+    // Restrinja acesso a outros tenants
+    if (!isSuperOrSupport && user.tenantId.toString() !== authUser.tenantId) {
+      throw new NotFoundException('User not found');
+    }
     const { passwordHash, ...result } = user;
     return result;
   }
