@@ -12,6 +12,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
 import { ChurchModule } from './modules/church/church.module';
 import { UserModule } from './modules/user/user.module';
 import { MemberModule } from './modules/member/member.module';
+import { DepartmentModule } from './modules/department/department.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { MemberModule } from './modules/member/member.module';
     ChurchModule,
     UserModule,
     MemberModule,
+    DepartmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -64,12 +64,13 @@ export class MemberController {
   }
 
   @Get(':id')
-  @Roles('support', 'super_admin', 'admin', 'leader')
+  @Roles('support', 'super_admin', 'admin', 'leader', 'member')
   async get(@Param('id') id: string, @Req() req: any) {
     const user = req.user;
     const isSuperOrSupport = ['support', 'super_admin'].includes(user.role);
     const isAdmin = user.role === 'admin';
     const isLeader = user.role === 'leader';
+    const isMember = user.role === 'member';
 
     const member = await this.getMemberUC.execute(id);
 
@@ -91,6 +92,13 @@ export class MemberController {
             String(member.tenantId) !== String(user.tenantId)) ||
           String(member.churchId) !== String(user.churchId)
         ) {
+          throw new ForbiddenException({
+            message: 'Access denied to this member.',
+          });
+        }
+      } else if (isMember) {
+        // Member: só pode acessar o próprio registro
+        if (String(id) !== String(user.memberId)) {
           throw new ForbiddenException({
             message: 'Access denied to this member.',
           });

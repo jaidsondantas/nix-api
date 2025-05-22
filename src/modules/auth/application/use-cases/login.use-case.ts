@@ -7,7 +7,12 @@ export class LoginUseCase {
   constructor(private readonly jwtService: JwtService) {}
 
   async execute(user: any) {
-    const payload = { sub: user._id, role: user.role, tenantId: user.tenantId };
+    const payload = {
+      sub: user._id,
+      role: user.role,
+      tenantId: user.tenantId,
+      memberId: user?.memberId,
+    };
     return {
       access_token: this.jwtService.sign(payload, {
         secret: jwtConstants.secret,
@@ -18,6 +23,7 @@ export class LoginUseCase {
         email: user.email,
         role: user.role,
         tenant: user.tenant,
+        memberId: user?.memberId,
       },
     };
   }
